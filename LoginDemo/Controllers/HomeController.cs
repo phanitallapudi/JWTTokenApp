@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Protocol.Plugins;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Text;
 
 namespace LoginDemo.Controllers
@@ -42,6 +44,27 @@ namespace LoginDemo.Controllers
             }
             
         }
+
+        public async Task<IActionResult> Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("Register")]
+        public async Task<IActionResult> Register(RegisterModel regMod)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                StringContent content = new StringContent(JsonConvert.SerializeObject(regMod), Encoding.UTF8, "application/json");
+                using (var response = await httpClient.PostAsync("http://localhost:5000/api/Authenticate/register", content))
+                {
+                    return Redirect("~/Home/Index");
+                }
+
+            }
+        }
+
 
         public IActionResult Logout()
         {
